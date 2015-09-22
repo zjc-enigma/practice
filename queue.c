@@ -1,42 +1,118 @@
 #include <stdio.h>
-typedef struct node {
-  int val;
-  struct node *next;
-} *pNode;
+#include <stdlib.h>
+#include <string.h>
+
+#define TRUE 1
+#define FALSE 0
+#define MAXSIZE 3
+
+#define GET_ARRAY_LEN(array, len) do {          \
+    len = (sizeof(array)/sizeof(array[0]));     \
+  }while(0)
+
+
+typedef int elem_t;
 
 typedef struct queue{
-
-  pNode header;
-  pNode tail;
+  int header;
   int size;
+  elem_t *base;
+
 } *pQueue;
 
-void initQueue(pQueue q) {
-  q->size = 0;
-  q->header = NULL;
-  q->tail = NULL;
-}
+typedef struct queue queue;
 
-void enQueue(pQueue q, pNode n) {
-  n->next = q->header;
-  q->header = n;
-  q->size++;
-  if(q->size == 1) {
-    q->tail = n;
+int queueIsFull(pQueue q) {
+
+  if(q->size >= MAXSIZE) {
+    return TRUE;
+  }
+  else {
+    return FALSE;
   }
 }
 
-pNode deQueue(pQueue q) {
+int queueIsEmpty(pQueue q) {
   if(q->size == 0) {
-    return NULL;
+    return TRUE;
   }
-  pNode res = q->tail;
-
-
+  else {
+    return FALSE;
+  }
 }
 
-int main() {
+void initQueue(pQueue q) {
+
+  q->base = (elem_t *)malloc(sizeof(elem_t)*MAXSIZE);
+  if(!q->base) {
+
+    fprintf(stderr, "error in malloc\n");
+    exit(-1);
+  }
+
+  q->size = 0;
+  q->header = -1;
+}
 
 
+void enQueue(pQueue q, elem_t e){
+
+  if(queueIsFull(q)){
+    fprintf(stderr, "queue is full\n");
+    exit(-1);
+  }
+
+  if(q->size == 0){
+    q->header = 0;
+   }
+  q->base[q->header] = e;
+  q->header--;
+  q->size++;
+  q->header = (q->header + MAXSIZE) % MAXSIZE;
+}
+
+elem_t deQueue(pQueue q){
+
+  if(queueIsEmpty(q)){
+    fprintf(stderr, "queue is empty\n");
+    exit(-2);
+  }
+  int tail = (q->header + q->size) % MAXSIZE;
+
+  elem_t res = q->base[tail];
+
+  q->size--;
+
+  if(q->size ==  0){
+    q->header = -1;
+  }
+  return res;
+}
+
+void deleteQueue(pQueue q){
+
+  free(q->base);
+  q->base = NULL;
+  q->header = -1;
+  q->size = 0;
+}
+
+int main(){
+  elem_t aa[] = {2,1,5,6,7};
+  queue q;
+
+  initQueue(&q);
+  enQueue(&q, aa[2]);
+  enQueue(&q, aa[1]);
+  enQueue(&q, aa[0]);
+  deQueue(&q);
+  enQueue(&q, aa[0]);
+  deQueue(&q);
+  enQueue(&q, aa[0]);
+  printf("%d\n", deQueue(&q));
+  printf("%d\n", deQueue(&q));
+  printf("%d\n", deQueue(&q));
+
+  return 0;
 
 }
