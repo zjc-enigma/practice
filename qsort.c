@@ -1,63 +1,101 @@
-#include<stdio.h>
+#include <stdio.h>
 
-void swap(int * a, int * b){
-    int t;
-    if(a != b) {
-        t = *a;
-        *a = *b;
-        *b = t;
-    }
-}
+#define SWAP1(A, B)                             \
+    do {                                        \
+        (A)=(A)^(B);                            \
+        (B)=(A)^(B);                            \
+        (A)=(A)^(B);                            \
+    } while(0)
 
-
-int partition(int array[], int begin, int end) {
-    if(begin >= end) {
-        return -1;
-    }
-
-    int var;
-
-    var = array[end];
-    int l = begin - 1;
-    int r = end;
-    for(;;) {
-        while(array[--r] > var);
-        while(array[++l] < var);
-
-        if(l < r) {
-            swap(&array[l], &array[r]);
-        }
-        else {
-            break;
-        }
-    }
-    swap(&array[l], &array[end]);
-    return l;
-}
+#define SWAP2(A, B)                             \
+    do {                                        \
+        typeof(A) t;                            \
+        t = (A);                                \
+        (A) = (B);                              \
+        (B) = t;                                \
+    } while(0)
 
 
-void qsort(int array[], int begin, int end) {
+#define SWAP3(A, B)                             \
+    do {                                        \
+        (A) = (A)+(B);                          \
+        (B) = (A)-(B);                          \
+        (A) = (A)-(B);                          \
+    } while(0)
+
+
+int test_array[]={16,31,22,9,71,88,0,-1,10,5};
+
+
+int partition(int a[], int begin, int end) {
+
     if(begin < end) {
+        int i, j, v;
+        i = begin - 1;
+        j = end;
+        v = a[end];
 
-        int i = partition(array, begin, end);
+        for(;;){
+            while(a[++i] < v);
+            while(a[--j] > v);
+            if(i >= j) break;
 
-        if(i != -1) {
-            qsort(array, begin, i-1);
-            qsort(array, i+1, end);
+            SWAP2(a[i], a[j]);
+        }
+        SWAP2(a[i], a[end]);
+        return i;
+    }
+    else
+        return -1;
+}
+
+
+
+/* void qsort_norecursive(int a[], int size) { */
+/*     int begin = 0; */
+/*     int end = size; */
+/*     stackinit(); */
+
+/* } */
+
+
+
+void qsort_basic(int a[], int begin, int end) {
+
+    if(begin < end) {
+        int i = partition(a, begin, end);
+
+        if(i > begin && i < end) {
+            qsort_basic(a, begin, i-1);
+            qsort_basic(a, i+1, end);
         }
     }
 }
 
 
-int main() {
-    int array[] = {3,1,5,5,1,2,5,2,6,9,0,7};
 
-    int len = sizeof(array)/sizeof(int);
+void test_case() {
+    int ccc = 10;
+    SWAP1(ccc, ccc);
+    printf("%d\n", ccc);
 
-    qsort(array, 0, len-1);
+    ccc = 20;
+    SWAP2(ccc, ccc);
+    printf("%d\n", ccc);
 
-    for(int i = 0; i < len; i++) {
-        printf("%d\t", array[i]);
+    ccc = 30;
+    SWAP3(ccc, ccc);
+    printf("%d\n", ccc);
+}
+
+int main(){
+
+    int len = sizeof(test_array)/sizeof(int);
+
+    qsort_basic(test_array, 0, len - 1);
+
+    for(int i=0; i < len; i++) {
+        printf("%d\t", test_array[i]);
     }
-    return 0;
+    printf("\n");
 }

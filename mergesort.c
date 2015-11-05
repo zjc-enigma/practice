@@ -61,6 +61,7 @@ pNode mergeSort(pNode header) {
   if(header->next != NULL) {
 
     a = header;
+
     b = header;
 
     while(b->next != NULL && b->next->next != NULL) {
