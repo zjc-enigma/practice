@@ -1,1 +1,1 @@
-# practice in C
+# practice in C / python 
